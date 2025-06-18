@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Списание товара</title>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .writeoff-container {
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 40px;
+            margin: 60px auto;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .btn {
+            border-radius: 8px;
+            min-width: 120px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .alert {
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="writeoff-container">
+    <h2>Списание товара</h2>
+
+    <!-- Сообщение об ошибке -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{/write-off}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Товар</label>
+            <select name="productId" class="form-select" required>
+                <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name}">Продукт</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Количество</label>
+            <input type="number" class="form-control" name="quantity" min="1" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Цель списания</label>
+            <select name="reason" class="form-select" required>
+                <option th:each="r : ${reasons}"
+                        th:value="${r}"
+                        th:text="${r == T(com.wms.warehouse.entity.WriteOffReason).SALE ? 'Продажа' : 'Утилизация'}">
+                </option>
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">Списать</button>
+            <a href="/stock" class="btn btn-secondary">Назад</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

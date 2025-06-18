@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Учёт партий</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 900px;
+            background-color: #ffffff;
+            padding: 30px;
+            margin-top: 40px;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            border-radius: 12px;
+        }
+
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            background-color: #f1f3f5;
+        }
+
+        .btn-outline-primary {
+            white-space: nowrap;
+        }
+
+        .table td, .table th {
+            vertical-align: middle;
+        }
+
+        .footer-btn {
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-back {
+            padding: 8px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+
+        .toggle-section {
+            transition: all 0.3s ease;
+        }
+
+        .btn-group-actions .btn {
+            margin-right: 10px;
+        }
+    </style>
+
+    <script defer>
+        function toggleBatches(id) {
+            const el = document.getElementById('batches-' + id);
+            el.classList.toggle('d-none');
+        }
+    </script>
+</head>
+
+<body>
+<div class="container">
+    <h2>Учёт партий</h2>
+
+    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap">
+        <a class="btn btn-outline-secondary" th:href="@{/}">
+            <i class="bi bi-arrow-left"></i> На главную
+        </a>
+
+        <div class="btn-group-actions d-flex gap-2">
+            <a th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''WAREHOUSE'') or hasRole(''SUPER_ADMIN'')')}"
+               href="/write-off/new" class="btn btn-warning">
+                🧾 Списать товар
+            </a>
+            <a th:if="${#authorization.expression('hasRole(''ADMIN'') or hasRole(''WAREHOUSE'') or hasRole(''SUPER_ADMIN'')')}"
+               th:href="@{/batches/new}" class="btn btn-secondary">
+                ➕ Добавить партию
+            </a>
+        </div>
+    </div>
+
+    <div th:each="product : ${products}" class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span th:text="${product.name}">Название товара</span>
+            <button class="btn btn-sm btn-outline-primary"
+                    th:onclick="'toggleBatches(' + ${product.id} + ')'">
+                Показать партии
+            </button>
+        </div>
+        <div class="card-body">
+            <p class="mb-1"><strong>Всего:</strong> <span th:text="${total[product.id] ?: 0}">0</span> <span th:text="${product.unit}">ед.</span></p>
+            <p class="mb-1"><strong>Просрочено:</strong> <span th:text="${expired[product.id] ?: 0}">0</span></p>
+            <p class="mb-3"><strong>Истекает:</strong> <span th:text="${expiring[product.id] ?: 0}">0</span></p>
+
+            <div class="d-none toggle-section" th:attr="id='batches-' + ${product.id}">
+                <h6 class="mt-3">Партии</h6>
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Количество</th>
+                        <th>Срок годности</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="batch : ${batchesByProduct[product.id]}"
+                        th:classappend="
+                            ${batch.expirationDate != null and batch.expirationDate.isBefore(T(java.time.LocalDate).now())} ? 'table-danger' :
+                            (${batch.expirationDate != null and batch.expirationDate.isBefore(T(java.time.LocalDate).now().plusDays(7))} ? 'table-warning' : 'table-success')">
+                        <td th:text="${batch.quantity}">0</td>
+                        <td th:text="${batch.expirationDate != null ? batch.expirationDate : '—'}">—</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</body>
+</html>

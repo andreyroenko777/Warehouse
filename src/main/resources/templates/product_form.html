@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Добавить товар</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 60px auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            border-radius: 8px;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .text-danger {
+            font-size: 0.9rem;
+        }
+
+        label {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-container">
+        <h2>Добавить товар</h2>
+        <form th:action="@{/products}" th:object="${product}" method="post" class="needs-validation" novalidate>
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Название</label>
+                <input type="text" th:field="*{name}" id="name" class="form-control" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Описание</label>
+                <input type="text" th:field="*{description}" id="description" class="form-control">
+            </div>
+
+            <div class="mb-4">
+                <label for="unit" class="form-label">Единица измерения</label>
+                <select th:field="*{unit}" id="unit" class="form-select" required>
+                    <option th:each="u : ${units}" th:value="${u}" th:text="${u}"></option>
+                </select>
+                <div class="text-danger" th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}"></div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">💾 Сохранить</button>
+                <a th:href="@{/products}" class="btn btn-secondary">↩️ Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

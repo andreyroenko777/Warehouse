@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Вход</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+            height: 100vh;
+        }
+
+        .login-card {
+            max-width: 400px;
+            padding: 40px;
+            margin: auto;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .spinner-border {
+            width: 1.2rem;
+            height: 1.2rem;
+        }
+
+        .toggle-password {
+            cursor: pointer;
+            user-select: none;
+            color: #0d6efd;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body class="d-flex justify-content-center align-items-center">
+
+<div class="login-card">
+    <h3>Вход в систему</h3>
+
+    <!-- Сообщение об ошибке -->
+    <div th:if="${param.error}" class="alert alert-danger text-center">
+        Неверный логин или пароль
+    </div>
+
+    <form th:action="@{/login}" method="post" onsubmit="handleLogin(event)">
+        <div class="mb-3">
+            <label for="username" class="form-label">Логин</label>
+            <input type="text" class="form-control" id="username" name="username" required autofocus/>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="password" name="password" required/>
+            <div class="mt-1">
+                <span class="toggle-password" onclick="togglePassword()">👁 Показать пароль</span>
+            </div>
+        </div>
+
+        <button id="loginBtn" type="submit" class="btn btn-primary w-100 mt-3 d-flex justify-content-center align-items-center gap-2">
+            <span id="btnText">🔐 Войти</span>
+            <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        </button>
+    </form>
+</div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById("password");
+        const toggleText = document.querySelector(".toggle-password");
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleText.textContent = "🙈 Скрыть пароль";
+        } else {
+            passwordInput.type = "password";
+            toggleText.textContent = "👁 Показать пароль";
+        }
+    }
+
+    function handleLogin(event) {
+        const btn = document.getElementById("loginBtn");
+        const text = document.getElementById("btnText");
+        const spinner = document.getElementById("spinner");
+
+        btn.disabled = true;
+        text.textContent = "Входим...";
+        spinner.classList.remove("d-none");
+    }
+</script>
+
+</body>
+</html>
